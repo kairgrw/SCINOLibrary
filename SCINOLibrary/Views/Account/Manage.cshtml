@@ -1,0 +1,60 @@
+﻿@using SCINOLibrary.Models;
+@using Microsoft.AspNet.Identity;
+@model ManagePersonalDataViewModel
+@{
+    ViewBag.Title = "Управление учетной записью";
+}
+
+<h2>Учетная запись</h2>
+@if(!User.IsInRole("Admin"))
+{
+    <h4>Пользователь: @User.Identity.Name</h4>
+}
+else
+{
+    <h4>Администратор: @User.Identity.Name</h4>
+}
+
+
+<p class="text-success">@ViewBag.StatusMessage</p>
+<div class="row">
+    <div class="col-md-4 col-md-offset-1" style="padding:10px">
+        @using (Html.BeginForm("EditPersonalData", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary()
+
+            <h4>Редактировать личные данные</h4>
+            <p>@Html.LabelFor(m => m.Surname, new { @class = "control-label" })</p>
+            <p>@Html.TextBoxFor(m => m.Surname, new { @class = "form-control", placeholder = "Фамилия" })</p>
+            <p>@Html.LabelFor(m => m.Name, new { @class = "control-label" })</p>
+            <p>@Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Имя" })</p>
+            <p>@Html.LabelFor(m => m.Email, new { @class = "control-label" })</p>
+            <p>@Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Логин" })</p>
+            <p>@Html.LabelFor(m => m.BirthDate, new { @class = "control-label" })</p>
+            <p>@Html.TextBoxFor(m => m.BirthDate, new { @class = "form-control", placeholder = "Дата рождения" })</p>
+            <p>@Html.LabelFor(m => m.Address, new { @class = "control-label" })</p>
+            <p>@Html.TextBoxFor(m => m.Address, new { @class = "form-control", placeholder = "Место проживания" })</p>
+            <p><input type="submit" value="Сохранить" class="btn btn-default" /></p>
+        }
+
+        
+
+        <section id="externalLogins">
+            @Html.Action("RemoveAccountList")
+        </section>
+    </div>
+    @if (ViewBag.HasLocalPassword)
+{
+    @Html.Partial("_ChangePasswordPartial", new ManageUserViewModel())
+}
+else
+{
+    @Html.Partial("_SetPasswordPartial")
+}
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

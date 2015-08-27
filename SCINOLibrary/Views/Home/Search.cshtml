@@ -1,0 +1,58 @@
+﻿@model IEnumerable<SCINOLibrary.Models.Book>
+
+@{
+    ViewBag.Title = "Результаты поиска";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (Model.ToList().Count == 0)
+{
+    <div class="row" style="padding-top:20px">
+        <div class="col-md-6 col-md-offset-4">
+            <h4>К сожалению, поиск не дал результатов</h4>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("Index", "Home", FormMethod.Get))
+{
+    <div class="row" style="padding-top:20px">
+        <div class="form-group text-center">
+            <input type="submit" value="Новый поиск" class=" btn btn-default" />
+        </div>
+    </div>
+}
+
+@if (Model.ToList().Count > 0)
+{
+    <div class="row" style="padding-top:20px">
+        <div class="form-group text-center">
+            <h5>Результатов: @Model.ToList().Count</h5>
+        </div>
+    </div>
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-2" style="padding-top:20px">
+                @if (item.Image == null)
+                {
+                    <img class="img-thumbnail" style="width: 200px; height: 200px;" src="~/Files/img/bookdef.png" data-holder-rendered="true">
+                }
+                else
+                {
+                    @Html.Raw("<img class='img-thumbnail' style='width:200px; height:200px;' src=\"data:image/jpeg;base64,"
+                                + Convert.ToBase64String(item.Image.Image) + "\" />")
+                }
+                <p>
+                    @Html.ActionLink(item.Title, "Details", "Home", new { id = item.ID }, null)
+                </p>
+                <p>
+                    @Html.DisplayFor(modelItem => item.Author)
+                </p>
+                <p>
+                    @item.Owner.Surname @item.Owner.Name
+                </p>
+            </div>
+        }
+    </div>
+}

@@ -1,0 +1,139 @@
+﻿@model SCINOLibrary.Models.Bid
+
+@{
+    ViewBag.Title = "Заявка";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Оформление заявки</h2>
+
+<div>
+    @if (Model.BookToBuy != null)
+    {
+        <h4>Поздравляем, вы только что оформили заявку на покупку книги</h4>
+    }
+    else
+    {
+        <h4>Поздравляем, вы только что оформили заявку на обмен книги</h4>
+    }
+    <hr />
+    <div class="form-group">
+        @Html.Label("Информация о заявке")
+    </div>
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Status)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Status)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreateAt)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreateAt)
+        </dd>
+    </dl>
+    @if (Model.BookToBuy != null)
+    {
+        <div class="form-group">
+            @Html.Label("Данные книги")
+        </div>
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.BookToBuy.Title)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.BookToBuy.Title)
+            </dd>
+        
+            <dt>
+                @Html.DisplayNameFor(model => model.BookToBuy.Price)
+            </dt>
+            <dd>
+                @if (Model.BookToBuy.Price > 0)
+                {
+                    @Html.DisplayFor(model => model.BookToBuy.Price)
+                }
+                else
+                {
+                    <p>Бесплатно</p>
+                }
+            </dd>
+            <dt>
+                @Html.Label("Владелец")
+            </dt>
+            <dd>
+                <p>@Model.BookToBuy.Owner.Surname @Model.BookToBuy.Owner.Name</p>
+            </dd>
+        </dl>
+    }
+    else
+    {
+        <div class="form-group">
+            @Html.Label("Вы предложили книгу")
+        </div>
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.SuggestedBook.Title)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.SuggestedBook.Title)
+            </dd>
+        
+            <dt>
+                @Html.DisplayNameFor(model => model.SuggestedBook.Price)
+            </dt>
+            <dd>
+                @if (Model.BookToBuy.Price > 0)
+                {
+                    @Html.DisplayFor(model => model.SuggestedBook.Price)
+                }
+                else
+                {
+                    <p>Бесплатно</p>
+                }
+            </dd>
+        </dl>
+        <div class="form-group">
+            @Html.Label("Вы хотите получить взамен книгу")
+        </div>
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.WantedBook.Title)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.WantedBook.Title)
+            </dd>
+        
+            <dt>
+                @Html.DisplayNameFor(model => model.WantedBook.Price)
+            </dt>
+            <dd>
+                @if (Model.BookToBuy.Price > 0)
+                {
+                    @Html.DisplayFor(model => model.WantedBook.Price)
+                }
+                else
+                {
+                    <p>Бесплатно</p>
+                }
+            </dd>
+            <dt>
+                @Html.Label("Владелец")
+            </dt>
+            <dd>
+                <p>@Model.WantedBook.Owner.Surname @Model.WantedBook.Owner.Name</p>
+            </dd>
+        </dl>
+    }
+    
+    <div class="form-group" style="padding-top:10px">
+        <a href="/Home/Search">
+            <input type="submit" value="Вернуться к поиску" class="btn btn-primary" />
+        </a>
+    </div>
+</div>

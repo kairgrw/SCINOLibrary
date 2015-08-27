@@ -1,0 +1,136 @@
+﻿@model SCINOLibrary.Models.Book
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Профиль книги</h2>
+
+<div class="row">
+	<hr />
+    <div class="col-md-4">
+        @if (Model.Image == null)
+        {
+            <img class="img-thumbnail" style="width: 250px; height: 350px;" src="~/Files/img/bookdef.png" data-holder-rendered="true">
+        }
+        else
+        {
+            @Html.Raw("<img class='img-thumbnail' style='max-height:400px;' src=\"data:image/jpeg;base64,"
+                                    + Convert.ToBase64String(Model.Image.Image) + "\" />")
+        }
+    </div>
+    <dl class="dl-horizontal col-md-4">
+        <dt>
+            @Html.LabelFor(model => model.Title)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+
+        <dt>
+            @Html.LabelFor(model => model.Author)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Author)
+        </dd>
+
+        <dt>
+            @Html.LabelFor(model => model.PublishYear)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PublishYear)
+        </dd>
+
+        <dt>
+            @Html.LabelFor(model => model.Placement)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Placement)
+        </dd>
+
+        <dt>
+            @Html.LabelFor(model => model.OnExchange)
+        </dt>
+
+        <dd>
+            @if(Model.OnExchange)
+            {
+                <p>Да</p>
+            }
+            else
+            {
+                 <p>Нет</p>
+            }
+            
+        </dd>
+
+        <dt>
+            @Html.LabelFor(model => model.Price)
+        </dt>
+
+        <dd>
+            @if (Model.Price > 0)
+            {
+                @Html.DisplayFor(model => model.Price)
+            }
+            else
+            {
+                <p>Бесплатно</p>
+            }
+            
+        </dd>
+
+        <dt>
+            @Html.LabelFor(model => model.Created)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Created)
+        </dd>
+
+        <dt>
+            @Html.LabelFor(model => model.Changed)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Changed)
+        </dd>
+
+        <dt>
+            @Html.Label("Жанры")
+        </dt>
+
+        <dd>
+            <ul>
+                @foreach (var genre in Model.Genres)
+                {
+                    <li>@genre.Name</li>
+                }
+            </ul>
+        </dd>
+    </dl>
+    <div class="col-md-4">
+        <div class="form-group">
+            @using (Html.BeginForm("Edit", "Book", new { id = Model.ID }, FormMethod.Get, null))
+            {
+                <input type="submit" value="Редактировать" class="btn btn-success" />
+            }
+        </div>
+        <div class="form-group">
+            @using (Html.BeginForm("Delete", "Book", new { id = Model.ID }, FormMethod.Get, null))
+            {
+                <input type="submit" value="Удалить" class="btn btn-danger" />
+            }
+        </div>
+        <div class="form-group">
+            <a href="/Book/Index">
+                <input type="submit" value="Назад" class="btn btn-primary" />
+            </a>
+        </div>
+    </div>
+</div>

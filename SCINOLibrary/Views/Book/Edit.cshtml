@@ -1,0 +1,126 @@
+﻿@model SCINOLibrary.Models.Book
+
+@{
+    ViewBag.Title = "Редактирование книги";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@ViewBag.Title</h2>
+<div class="row">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal col-md-8">
+            <hr />
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.ID)
+            @Html.HiddenFor(model => model.Created)
+            @Html.HiddenFor(model => model.Changed)
+        
+            <div class="form-group">
+                @Html.LabelFor(model => model.Title, new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.Title, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Title)
+                </div>
+            </div>
+        
+            <div class="form-group">
+                @Html.LabelFor(model => model.Author, new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.Author, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Author)
+                </div>
+            </div>
+        
+            <div class="form-group">
+                @Html.LabelFor(model => model.PublishYear, new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.PublishYear, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.PublishYear)
+                </div>
+            </div>
+        
+            <div class="form-group">
+                @Html.LabelFor(model => model.Price, new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.Price, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Price)
+                </div>
+            </div>
+        
+            <div class="form-group">
+                @Html.LabelFor(model => model.Placement, new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.Placement, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Placement)
+                </div>
+            </div>
+        
+            <div class="form-group">
+                @Html.LabelFor(model => model.OnExchange, new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.CheckBoxFor(model => model.OnExchange)
+                    <label class="control-label">можно предлагать обмен</label>
+                    @Html.ValidationMessageFor(model => model.OnExchange)
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Жанры", new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @foreach (var genre in ViewBag.Genres)
+                    {
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="selectedGenres" value="@genre.ID"
+                                       @(Model.Genres.Contains(genre) ? "checked=\"checked\"" : "") />@genre.Name <br />
+                                </label>
+                            </div>
+                    }
+                </div>
+            </div>
+        
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Сохранить" class="btn btn-success" />
+                </div>
+            </div>
+        </div>
+    }
+    
+    <div class="col-md-4">
+        <hr />
+        @if (Model.Image == null)
+        {
+            using (Html.BeginForm("AddImage", "Book", new { id = Model.ID }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                <p style="padding-bottom:10px"><input type="file" name="uploadImage"/></p>
+                <p><input type="submit" value="Загрузить" class="btn btn-default"/></p>
+            }
+            
+        }
+        else
+        {
+            using (Html.BeginForm("DeleteImage", "Book", new { id = Model.ID }, FormMethod.Post, null))
+            {
+                @Html.AntiForgeryToken()
+                @Html.Raw("<img class='img-thumbnail' style='width:200px; height:200px;' src=\"data:image/jpeg;base64,"
+                                + Convert.ToBase64String(Model.Image.Image) + "\" />")
+                <p><input type="submit" value="Удалить фото" class="btn btn-danger" /></p>
+            }
+        }
+
+    </div>
+    <div class="form-group">
+        <div class="col-md-10">
+            <a href="/Book/Index">
+                <input type="submit" value="Назад" class="btn btn-primary" />
+            </a>
+        </div>
+    </div>
+</div>
+
+

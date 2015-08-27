@@ -1,0 +1,46 @@
+﻿@model SCINOLibrary.Models.ExchangeModel
+
+@{
+    ViewBag.Title = "Обмен";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Выберите книгу для обмена</h2>
+
+@using (Html.BeginForm(new { books = Model.Books }))
+{
+    @Html.HiddenFor(model => model.WantedBookID)
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <hr />
+        @if (Model.Books.Count > 0)
+        {
+            <div class="form-group col-md-12">
+                @Html.Label("Книги", new { @class = "control-label" })
+                @Html.DropDownListFor(model => model.Title, Model.BooksToSuggest, new { @class = "form-control" })
+            </div>
+           
+            <div class="form-group">
+                <div class="col-md-12">
+                    <input type="submit" value="Продолжить" class="btn btn-default" />
+                </div>
+            </div>
+            
+        }
+        else
+        {
+            <p>
+                У вас отсутствуют книги для обмена.
+                Создайте новый профиль книги и разрешите обмен
+                или выберите любую из ваших книг
+            </p>
+        }     
+    </div>
+}
+
+<div class="form-group">
+    <a href="/Home/Search">
+        <input type="submit" value="Назад" class="btn btn-primary" />
+    </a>
+</div>

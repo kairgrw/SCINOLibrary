@@ -1,0 +1,57 @@
+﻿@model SCINOLibrary.Models.UserInfoModel
+@{
+    ViewBag.Title = "Информация о владельце";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Информация о владельце</h2>
+
+<div class="row">
+    <dl class="dl-horizontal col-md-4">
+        <dt>
+            @Html.Label("Фамилия")
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User.Surname)
+        </dd>
+
+        <dt>
+            @Html.Label("Имя")
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User.Name)
+        </dd>
+
+        <dt>
+            @Html.Label("Электронная почта")
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User.Email)
+        </dd>
+
+        <dt>
+            @Html.Label("Дата рождения")
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.userBirthDate)
+        </dd>
+        
+        <dt>
+            @Html.Label("Место проживания")
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User.Address)
+        </dd>
+    </dl>
+    <div class="form-group col-md-10 col-md-offset-1">
+        @using (@Html.BeginForm("Details", "Home", new { id = Model.BookID }, FormMethod.Get, null))
+        {
+            <p><input type="submit" value="Назад" class="btn btn-primary"/></p>
+        }
+    </div>
+</div>

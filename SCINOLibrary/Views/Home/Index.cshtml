@@ -1,0 +1,101 @@
+﻿@model SCINOLibrary.Models.SearchBookModel
+@{
+    ViewBag.Title = "Поиск книги";
+}
+
+<div class="row">
+   <div class="col-md-offset-5" >
+       <h2>@ViewBag.Title</h2>
+   </div>
+</div>
+
+<div class="container">
+    @using (Html.BeginForm("Search", "Home", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+        <div class="row">
+            <div class="col-md-2 col-lg-3 col-md-offset-1">
+                <p>@Html.LabelFor(model => model.Author, new { @class = "control-label" })</p>
+            </div>
+            <div class="col-md-2 col-lg-3">
+                <p>@Html.LabelFor(model => model.Title, new { @class = "control-label" })</p>
+            </div>
+            <div class="col-md-2">
+                <p><label class="control-label">Цена, руб</label></p>
+            </div>
+            <div class="col-md-2">
+                <p><label class="control-label">Год издания</label></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2 col-lg-3 col-md-offset-1">
+                <p>@Html.TextBoxFor(model => model.Author, new { @class = "form-control", @placeholder = "ФИО автора" })</p>
+                <p>@Html.ValidationMessageFor(model => model.Author)</p>
+            </div>
+            <div class="col-md-2 col-lg-3">
+                <p>@Html.TextBoxFor(model => model.Title, new { @class = "form-control" })</p>
+                <p>@Html.ValidationMessageFor(model => model.Title)</p>
+            </div>
+            <div class="col-md-1">
+                <p>@Html.TextBoxFor(model => model.PriceLow, new { @class = "form-control", @placeholder = "От" })</p>
+                <p>@Html.ValidationMessageFor(model => model.PriceLow)</p>
+            </div>
+            <div class="col-md-1">
+                <p>@Html.TextBoxFor(model => model.PriceHigh, new { @class = "form-control", @placeholder = "До" })</p>
+                <p>@Html.ValidationMessageFor(model => model.PriceHigh)</p>
+            </div>
+            <div class="col-md-1" style="width:120px">
+                <p>@Html.DropDownListFor(model => model.PublishYearFrom, Model.ListPublishYearFrom, new { @class = "form-control" })</p>
+
+            </div>
+            <div class="col-md-1" style="width:120px">
+                <p>@Html.DropDownListFor(model => model.PublishYearTo, Model.ListPublishYearTo, new { @class = "form-control" })</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2 col-lg-3 col-md-offset-1">
+                <p>@Html.LabelFor(model => model.Placement, new { @class = "control-label" })</p>
+                <p>@Html.TextBoxFor(model => model.Placement, new { @class = "form-control" })</p>
+                <p>@Html.ValidationMessageFor(model => model.Placement)</p>
+            </div>
+            <div class="col-md-2 col-lg-3">
+                <p>@Html.LabelFor(model => model.OnExchange, new { @class = "control-label" })</p>
+                <p>@Html.CheckBoxFor(model => model.OnExchange) можно предлагать обмен</p>
+            </div>
+        </div>
+        <div class="row col-md-offset-1">
+            <p>@Html.Label("Жанры", new { @class = "control-label" })</p>
+            @foreach (var genre in ViewBag.Genres)
+            {
+                <div class="col-md-3">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="selectedGenres" value="@genre.ID" />@genre.Name
+                        </label>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="form-group text-center">
+            <input type="submit" value="Поиск" class=" btn btn-primary" />
+        </div>
+    }
+</div>
+
+@if (ViewBag.UserBooks == null && !User.IsInRole("Admin"))
+{
+    using (Html.BeginForm("Create", "Book", FormMethod.Get))
+    {
+        @Html.AntiForgeryToken()
+        <div class="form-group text-center" style="padding-top:40px">
+            <input type="submit" value="Предложить книгу!" class=" btn btn-default" />
+        </div>
+    }
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+

@@ -1,0 +1,192 @@
+﻿@model SCINOLibrary.Models.Book
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Профиль книги</h2>
+
+<div class="row">
+    <hr />
+    <div class="col-md-4">
+        @if (Model.Image == null)
+        {
+            <img class="img-thumbnail" style="width: 250px; height: 350px;" src="~/Files/img/bookdef.png" data-holder-rendered="true">
+        }
+        else
+        {
+            @Html.Raw("<img class='img-thumbnail' style='max-height:400px;' src=\"data:image/jpeg;base64,"
+                                    + Convert.ToBase64String(Model.Image.Image) + "\" />")
+        }
+    </div>
+    <dl class="dl-horizontal col-md-4">
+        <dt>
+            @Html.LabelFor(model => model.Title)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+
+        <dt>
+            @Html.LabelFor(model => model.Author)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Author)
+        </dd>
+
+        <dt>
+            @Html.LabelFor(model => model.PublishYear)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PublishYear)
+        </dd>
+
+        <dt>
+            @Html.LabelFor(model => model.Placement)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Placement)
+        </dd>
+
+        <dt>
+            @Html.LabelFor(model => model.OnExchange)
+        </dt>
+
+        <dd>
+            @if (Model.OnExchange)
+            {
+                <p>Да</p>
+            }
+            else
+            {
+                <p>Нет</p>
+            }
+
+        </dd>
+
+        <dt>
+            @Html.LabelFor(model => model.Price)
+        </dt>
+
+        <dd>
+            @if (Model.Price > 0)
+            {
+                <p>@Html.DisplayFor(model => model.Price) руб</p>
+            }
+            else
+            {
+                <p>Бесплатно</p>
+            }
+
+        </dd>
+
+        <dt>
+            @Html.LabelFor(model => model.Created)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Created)
+        </dd>
+
+        <dt>
+            @Html.LabelFor(model => model.Changed)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Changed)
+        </dd>
+
+        <dt>
+            @Html.Label("Владелец")
+        </dt>
+
+        <dd>
+            @Html.ActionLink(Model.Owner.Surname + " " + Model.Owner.Name, "UserInfo", "Home", new { userID = Model.Owner.Id, bookID = Model.ID }, null)
+        </dd>
+
+        <dt>
+            @Html.Label("Жанры")
+        </dt>
+
+        <dd>
+            <ul>
+                @foreach (var genre in Model.Genres)
+                {
+                    <li>@genre.Name</li>
+                }
+            </ul>
+        </dd>
+    </dl>
+    <div class="col-md-2 col-md-offset-1">
+        <div class="form-group">
+            <a href="/Home/Search">
+                <input type="submit" value="Назад" class="btn btn-primary" />
+            </a>
+        </div>
+        @if(User.Identity.Name==Model.Owner.UserName)
+        {
+            <div class="form-group">
+            @using (Html.BeginForm("Edit", "Book", new { id = Model.ID }, FormMethod.Get, null))
+            {
+                <input type="submit" value="Редактировать" class="btn btn-success" />
+            }
+            </div>
+            <div class="form-group">
+                @using (Html.BeginForm("Delete", "Book", new { id = Model.ID }, FormMethod.Get, null))
+                {
+                    <input type="submit" value="Удалить" class="btn btn-danger" />
+                }
+            </div>
+        }
+        else
+        {
+            if(Model.OnExchange)
+            {
+                if (Model.Bids.ToList().Find(x => x.UserCreate.UserName == User.Identity.Name && x.WantedBook==Model) == null)
+                {
+                    <div class="form-group">
+                     @using (Html.BeginForm("SuggestExchange", "Book", new { id = Model.ID }, FormMethod.Get, null))
+                     {
+                         <input type="submit" value="Обменять" class="btn btn-danger" />
+                     }
+                 </div>
+                }
+                else
+                {
+                    <div class="form-group">
+                     @using (Html.BeginForm("UndoExchange", "Book", new { id = Model.ID }, FormMethod.Post, null))
+                     {
+                         <input type="submit" value="Отменить обмен" class="btn btn-danger" />
+                     }
+                 </div>
+                } 
+                
+            }
+            if(Model.Bids.ToList().Find(x=>x.UserCreate.UserName==User.Identity.Name)==null)
+            {
+                <div class="form-group">
+                @using (Html.BeginForm("Buy", "Book", new { id = Model.ID }, FormMethod.Post, null))
+                {
+                    <input type="submit" value="Купить" class="btn btn-default" />
+                }
+            </div>
+            }
+            else
+            {
+                <div class="form-group">
+                @using (Html.BeginForm("UndoBuy", "Book", new { id = Model.ID }, FormMethod.Post, null))
+                {
+                    <input type="submit" value="Отменить покупку" class="btn btn-default" />
+                }
+            </div>
+            }
+            
+        }
+    </div>
+</div>
+

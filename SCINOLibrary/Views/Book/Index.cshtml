@@ -1,0 +1,153 @@
+﻿@model SCINOLibrary.Models.MyBooksModel
+@using SCINOLibrary.Models
+
+@{
+    ViewBag.Title = "Мои книги";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+    $('#userData a').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    })
+</script>
+
+<ul class="nav nav-tabs" id="userData" style="padding-top:20px">
+    <li class="active"><a href="#Home" data-toggle="tab">Книги</a></li>
+    <li class=""><a href="#Bids" data-toggle="tab">Заявки</a></li>
+</ul>
+<div class="tab-content" id="userDataContent">
+    <div class="tab-pane fade active in" id="Home">
+        @if (Model.Books.ToList().Count == 0)
+        {
+            <div class="row" style="padding-top:20px">
+                <div class="form-group text-center">
+                    <h4>Вы еще не создали ни одного профиля книги</h4>
+                    @using (Html.BeginForm("Create", "Book", FormMethod.Get))
+                    {
+                        <div class="form-group text-center">
+                            <input type="submit" value="Создать" class=" btn btn-default" />
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class=" row">
+                @using (Html.BeginForm("Create", "Book", FormMethod.Get))
+                {
+                    <div class="form-group col-md-1" style="padding-top:20px">
+                        <input type="submit" value="Добавить книгу" class=" btn btn-default" />
+                    </div>
+                }
+            </div>
+            <div class="row">
+                @foreach (var item in Model.Books)
+                {
+                    <div class="col-md-2" style="padding-top:20px">
+                        @if (item.Image == null)
+                        {
+                            <img class="img-thumbnail" style="width: 200px; height: 200px;" src="~/Files/img/bookdef.png" data-holder-rendered="true">
+                        }
+                        else
+                        {
+                            @Html.Raw("<img class='img-thumbnail' style='width:200px; height:200px;' src=\"data:image/jpeg;base64,"
+                                    + Convert.ToBase64String(item.Image.Image) + "\" />")
+                        }
+                        <div class="btn-group">
+                            <button type="button" data-toggle="dropdown" class="btn btn-default dropdown-toggle" style="width:165px;">
+                                Действие
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("Подробнее", "Details", new { id = item.ID })</li>
+                                <li>@Html.ActionLink("Редактировать", "Edit", new { id = item.ID })</li>
+                                <li>@Html.ActionLink("Удалить", "Delete", new { id = item.ID })</li>
+                            </ul>
+                        </div>
+                        <p style="font-family:Arial; font-size:15px">
+                            @Html.DisplayFor(modelItem => item.Title)
+                        </p>
+                        <p>
+                            @Html.DisplayFor(modelItem => item.Placement)
+                        </p>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+    <div class="tab-pane fade" id="Bids">
+        <div class=" row">
+            @if (Session["Suggestions"]==null)
+            {
+                <div class="row" style="padding-top:20px">
+                    <div class="form-group text-center">
+                        <h4>У вас пока нет заявок</h4>
+                    </div>
+                </div>
+            }
+            else
+            {
+                foreach (var item in Model.Bids)
+                {
+                    <div class="col-md-4" style="padding-top:20px">
+                        <p>
+                            @if(item.BookToBuy!=null)
+                            {
+                                <p>
+                                    Пользователь 
+                                    @Html.ActionLink(item.UserCreate.Surname + " " + item.UserCreate.Name, "UserInfo", "Home", new { userID = item.UserCreate.Id, bookID = item.BookToBuy.ID }, null)
+                                    хочет купить у вас книгу
+                                    @Html.ActionLink(item.BookToBuy.Title, "Details", "Book", new { id = item.BookToBuy.ID }, null)
+                                    автора
+                                    @Html.DisplayFor(modelItem => item.BookToBuy.Author)
+                                    за
+                                    @Html.DisplayFor(modelItem => item.BookToBuy.Price)
+                                    руб
+                                </p>
+                                <p>
+                                    Заявка отправлена
+                                    @Html.DisplayFor(modelItem => item.CreateAt)
+                                </p>
+                                if (item.Status < EStatus.Approved)
+                                {
+                                    <div class="col-md-2">
+                                        @using (Html.BeginForm("Approve", "Bid", new { id=item.ID }, FormMethod.Post, null))
+                                        {
+                                            <input type="submit" value="Принять" class="btn btn-success" />
+                                        }
+                                    </div>
+                                    <div class="col-md-2 col-md-offset-1">
+                                        @using (Html.BeginForm("Reject", "Bid", new { id = item.ID }, FormMethod.Post, null))
+                                        {
+                                            <input type="submit" value="Отказать" class="btn btn-danger" />
+                                        }
+                                    </div>
+                                }
+                                if(!item.IsChecked)
+                                {
+                                    <div class="col-md-2 col-md-offset-1">
+                                        @using (Html.BeginForm("Check", "Bid", new { id = item.ID }, FormMethod.Post, null))
+                                        {
+                                            <input type="submit" value="Отметить" class="btn btn-primary" />
+                                        }
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                
+                            }
+                            
+                        </p>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+
+

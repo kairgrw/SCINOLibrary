@@ -1,0 +1,95 @@
+﻿@model SCINOLibrary.Models.LoginViewModel
+@using Microsoft.AspNet.Identity
+@if (Request.IsAuthenticated)
+{
+    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <ul class="nav navbar-nav navbar-right">
+            <li>
+                @if(!User.IsInRole("Admin"))
+                {
+                    if(Session["UserName"]!=null)
+                    {
+                        @Html.ActionLink(Session["UserName"].ToString(), "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Управление" });
+                    }
+                    else
+                    {
+                        @Html.ActionLink(User.Identity.GetUserName(), "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Управление" });
+                    }
+                }
+                else
+                {
+                    @Html.ActionLink("Администратор " + Session["UserName"].ToString(), "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Управление" });
+                }
+                    
+            </li>
+            @if (!User.IsInRole("Admin"))
+            {
+                <li>
+                    @if (Session["Suggestions"] == null)
+                    {
+                        @Html.ActionLink("Мои книги", "Index", "Book");
+                    }
+                    else
+                    {
+                        string count = Session["Suggestions"].ToString();
+                        @Html.ActionLink("Мои книги (+" + count + ")", "Index", "Book");
+                    }
+                </li>
+                <li>
+                    @if (Session["Bids"] == null)
+                    {
+                        @Html.ActionLink("Заявки", "Index", "Bid");
+                    }
+                    else
+                    {
+                        string count = Session["Bids"].ToString();
+                        @Html.ActionLink("Заявки (+" + count + ")", "Index", "Bid");
+                    }
+                </li>
+            }
+            else
+            {
+                <li>@Html.ActionLink("Пользователи", "Index", "User")</li>
+            }
+            
+            <li><a href="javascript:document.getElementById('logoutForm').submit()">Выйти</a></li>
+        </ul>
+    }
+}
+else
+{
+    <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+            <a href="#" data-toggle="dropdown" class="dropdown-toggle" title="Вход в систему">
+                Вход<b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu" style="padding: 20px; width: 250px">
+                <li>
+                    @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true)
+                        <p>
+                            @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", @placeholder = "Логин"})
+                            @Html.ValidationMessageFor(m => m.UserName)
+                        </p>
+                        <p>
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Пароль" })
+                            @Html.ValidationMessageFor(m => m.Password)
+                        </p>
+                        <p>
+                            @Html.CheckBoxFor(m => m.RememberMe)
+                            @Html.LabelFor(m => m.RememberMe)
+                        </p>
+                        <p>
+                            <input type="submit" value="Войти" class="btn btn-primary" />
+                        </p>
+                    }
+                </li>
+            </ul>
+        </li>
+    </ul>
+}
