@@ -21,6 +21,7 @@ namespace SCINOLibrary.Models
         public void CreateBooksList(ApplicationDbContext db, string userID)
         {
             Books = db.Books.Where(x => (x.Owner.Id == userID && x.OnExchange)).ToList();
+            // добавить фильтрацию по предложенным на обмен книгам в заявках
             List<string> titles = new List<string>();
             foreach(var book in Books)
             {

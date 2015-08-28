@@ -349,7 +349,6 @@
     <Content Include="Views\Home\Details.cshtml" />
     <Content Include="Views\Home\UserInfo.cshtml" />
     <Content Include="Views\Book\NewBid.cshtml" />
-    <Content Include="Views\Bid\Details.cshtml" />
     <Content Include="Views\Bid\Index.cshtml" />
     <Content Include="Views\Book\SuggestExchange.cshtml" />
   </ItemGroup>

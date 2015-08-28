@@ -7,7 +7,7 @@
 
 <h2>Выберите книгу для обмена</h2>
 
-@using (Html.BeginForm(new { books = Model.Books }))
+@using (Html.BeginForm())
 {
     @Html.HiddenFor(model => model.WantedBookID)
     @Html.AntiForgeryToken()

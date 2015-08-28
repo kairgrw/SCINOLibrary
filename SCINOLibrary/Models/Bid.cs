@@ -30,7 +30,7 @@ namespace SCINOLibrary.Models
         public DateTime CreateAt { get; set; }
 
         // время рассмотрения заявки адресатом
-        [Display(Name = "Исполнена")]
+        [Display(Name = "Просмотрена")]
         public DateTime? CheckedAt { get; set; }
 
         // пользователь, оформивший заявку

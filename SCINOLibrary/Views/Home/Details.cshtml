@@ -147,7 +147,7 @@
         {
             if(Model.OnExchange)
             {
-                if (Model.Bids.ToList().Find(x => x.UserCreate.UserName == User.Identity.Name && x.WantedBook==Model) == null)
+                if (Model.Bids.ToList().Find(x => (x.UserCreate.UserName == User.Identity.Name && x.WantedBook==Model)) == null)
                 {
                     <div class="form-group">
                      @using (Html.BeginForm("SuggestExchange", "Book", new { id = Model.ID }, FormMethod.Get, null))
@@ -167,7 +167,7 @@
                 } 
                 
             }
-            if(Model.Bids.ToList().Find(x=>x.UserCreate.UserName==User.Identity.Name)==null)
+            if(Model.Bids.ToList().Find(x=>(x.UserCreate.UserName==User.Identity.Name && x.BookToBuy==Model))==null)
             {
                 <div class="form-group">
                 @using (Html.BeginForm("Buy", "Book", new { id = Model.ID }, FormMethod.Post, null))

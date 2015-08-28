@@ -72,7 +72,7 @@ namespace SCINOLibrary.Controllers
                 }
                 else
                 {
-                    book.Genres.Clear();
+                    //book.Genres.Clear();
                     if (selectedGenres != null)
                         foreach (var genre in db.Genres.Where(x => selectedGenres.Contains(x.ID)))
                             book.Genres.Add(genre);
@@ -125,7 +125,6 @@ namespace SCINOLibrary.Controllers
                 else
                 {
                     Book newBook = db.Books.Find(book.ID);
-                    newBook.ID = book.ID;
                     newBook.Title = book.Title;
                     newBook.Author = book.Author;
                     newBook.PublishYear = book.PublishYear;
@@ -327,15 +326,15 @@ namespace SCINOLibrary.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult SuggestExchange(ExchangeModel model, List<Book> books)
+        public ActionResult SuggestExchange(ExchangeModel model)
         {
-            if (books != null && books.Count > 0)
+            if (ModelState.IsValid)
             {
                 ApplicationUser user = db.Users.Find(UserId);
-
+                model.CreateBooksList(db, UserId);
                 var bid = db.Bids.ToList().Find(x => (x.UserCreate == user &&
                     (x.WantedBook != null && x.WantedBook.ID == model.WantedBookID) &&
-                    x.SuggestedBook == books.Find(y => y.Title == model.Title)));
+                    x.SuggestedBook == model.Books.Find(y => y.Title == model.Title)));
                 if (bid != null)
                 {
                     return View("NewBid", bid);
@@ -348,15 +347,15 @@ namespace SCINOLibrary.Controllers
                     CreateAt = DateTime.Now,
                     UserCreate = user,
                     WantedBook = db.Books.Find(model.WantedBookID),
-                    SuggestedBook = books.Find(y => y.Title == model.Title)
+                    SuggestedBook = model.Books.Find(y => y.Title == model.Title)
                 };
 
-                db.Bids.Add(bid);
                 Book wantedBook = db.Books.Find(bid.WantedBook.ID);
-                wantedBook.Bids.Add(bid);
                 Book suggestedBook = db.Books.Find(bid.SuggestedBook.ID);
-                suggestedBook.Bids.Add(bid);
-                db.Entry(suggestedBook).State = EntityState.Modified;
+
+                db.Bids.Add(bid);
+                wantedBook.Bids.Add(bid);
+                db.Entry(wantedBook).State = EntityState.Modified;
 
                 db.SaveChanges();
 

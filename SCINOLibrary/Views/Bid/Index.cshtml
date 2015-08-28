@@ -1,45 +1,58 @@
 ﻿@model IEnumerable<SCINOLibrary.Models.Bid>
-
+@using SCINOLibrary.Models
 @{
     ViewBag.Title = "Заявки";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Status)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.IsChecked)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CreateAt)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CheckedAt)
-        </th>
-        <th></th>
-    </tr>
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-2" style="padding: 20px; margin:10px; background-color: #ccc6c6; border:double; border-radius:50px">
+            @if (item.Status == EStatus.Created)
+            {
+                <p style="color:#0094ff">Заявка отправлена!</p>
+            }
+            else if (item.Status == EStatus.Processing)
+            {
+                <p style="color:#ffd800">Заявка обрабатывается</p>
+            }
+            else if (item.Status == EStatus.Rejected)
+            {
+                <p style="color:#ff0000">Заявка отклонена!</p>
+            }
+            else
+            {
+                <p style="color:#2b8a18">Заявка принята!</p>
+            }
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Status)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.IsChecked)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.CreateAt)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.CheckedAt)
-        </td>
-        <td>
-            @Html.ActionLink("Details", "Details", new { id=item.ID })
-        </td>
-    </tr>
-}
-
-</table>
+            @if (item.BookToBuy != null)
+            {
+                <p>Продажа</p>
+                if (item.BookToBuy.Owner.UserName == User.Identity.Name)
+                {
+                    <p>@Html.ActionLink(item.BookToBuy.Title, "Details", "Book", new { id = item.BookToBuy.ID }, null)</p>
+                }
+                else
+                {
+                    <p>@Html.DisplayFor(model => item.BookToBuy.Title)</p>
+                }
+            }
+            else
+            {
+                <p>Обмен</p>
+                if (item.WantedBook.Owner.UserName == User.Identity.Name)
+                {
+                    <p>@Html.ActionLink(item.WantedBook.Title, "Details", "Book", new { id = item.WantedBook.ID }, null)</p>
+                }
+                else
+                {
+                    <p>@Html.DisplayFor(model => item.WantedBook.Title)</p>
+                }
+            }
+            <p>@item.UserCreate.Surname @item.UserCreate.Name</p>
+            <p>@Html.DisplayFor(modelItem => item.CreateAt)</p>
+            <p>@Html.DisplayFor(modelItem => item.CheckedAt)</p>
+        </div>  
+    }
+</div>

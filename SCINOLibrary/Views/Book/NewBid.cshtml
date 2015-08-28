@@ -1,4 +1,5 @@
 ﻿@model SCINOLibrary.Models.Bid
+@using SCINOLibrary.Models 
 
 @{
     ViewBag.Title = "Заявка";
@@ -21,14 +22,6 @@
         @Html.Label("Информация о заявке")
     </div>
     <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-
         <dt>
             @Html.DisplayNameFor(model => model.CreateAt)
         </dt>
@@ -56,7 +49,7 @@
             <dd>
                 @if (Model.BookToBuy.Price > 0)
                 {
-                    @Html.DisplayFor(model => model.BookToBuy.Price)
+                    <p>@Html.DisplayFor(model => model.BookToBuy.Price) руб</p>
                 }
                 else
                 {
@@ -88,9 +81,9 @@
                 @Html.DisplayNameFor(model => model.SuggestedBook.Price)
             </dt>
             <dd>
-                @if (Model.BookToBuy.Price > 0)
+                @if (Model.SuggestedBook.Price > 0)
                 {
-                    @Html.DisplayFor(model => model.SuggestedBook.Price)
+                    <p>@Html.DisplayFor(model => model.SuggestedBook.Price) руб</p>
                 }
                 else
                 {
@@ -113,9 +106,9 @@
                 @Html.DisplayNameFor(model => model.WantedBook.Price)
             </dt>
             <dd>
-                @if (Model.BookToBuy.Price > 0)
+                @if (Model.WantedBook.Price > 0)
                 {
-                    @Html.DisplayFor(model => model.WantedBook.Price)
+                    <p>@Html.DisplayFor(model => model.WantedBook.Price) руб</p>
                 }
                 else
                 {

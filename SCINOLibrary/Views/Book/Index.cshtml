@@ -92,7 +92,7 @@
             {
                 foreach (var item in Model.Bids)
                 {
-                    <div class="col-md-4" style="padding-top:20px">
+                    <div class="col-md-4" style="padding: 20px; border: groove; border-radius: 10px">
                         <p>
                             @if(item.BookToBuy!=null)
                             {
@@ -138,7 +138,46 @@
                             }
                             else
                             {
-                                
+                                <p>
+                                    Пользователь 
+                                    @Html.ActionLink(item.UserCreate.Surname + " " + item.UserCreate.Name, "UserInfo", "Home", new { userID = item.UserCreate.Id, bookID = item.SuggestedBook.ID }, null)
+                                    предлагает вам обменять книгу
+                                    @Html.ActionLink(item.WantedBook.Title, "Details", "Book", new { id = item.WantedBook.ID }, null)
+                                    автора
+                                    @Html.DisplayFor(modelItem => item.WantedBook.Author)
+                                    на книгу
+                                    @Html.ActionLink(item.SuggestedBook.Title, "Details", "Book", new { id = item.SuggestedBook.ID }, null)
+                                    автора
+                                    @Html.DisplayFor(modelItem => item.SuggestedBook.Author)
+                                </p>
+                                <p>
+                                    Заявка отправлена
+                                    @Html.DisplayFor(modelItem => item.CreateAt)
+                                </p>
+                                if (item.Status < EStatus.Approved)
+                                {
+                                    <div class="col-md-2">
+                                        @using (Html.BeginForm("Approve", "Bid", new { id=item.ID }, FormMethod.Post, null))
+                                        {
+                                            <input type="submit" value="Принять" class="btn btn-success" />
+                                        }
+                                    </div>
+                                    <div class="col-md-2 col-md-offset-1">
+                                        @using (Html.BeginForm("Reject", "Bid", new { id = item.ID }, FormMethod.Post, null))
+                                        {
+                                            <input type="submit" value="Отказать" class="btn btn-danger" />
+                                        }
+                                    </div>
+                                }
+                                if(!item.IsChecked)
+                                {
+                                    <div class="col-md-2 col-md-offset-1">
+                                        @using (Html.BeginForm("Check", "Bid", new { id = item.ID }, FormMethod.Post, null))
+                                        {
+                                            <input type="submit" value="Отметить" class="btn btn-primary" />
+                                        }
+                                    </div>
+                                }
                             }
                             
                         </p>
