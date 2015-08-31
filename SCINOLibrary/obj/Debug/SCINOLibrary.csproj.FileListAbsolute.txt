@@ -99,3 +99,5 @@ E:\ТТИ ЮФУ\Практика 3 курс\SCINOLibrary\SCINOLibrary\obj\Debug
 E:\ТТИ ЮФУ\Практика 3 курс\SCINOLibrary\SCINOLibrary\obj\Debug\SCINOLibrary.Migrations.migr104.resources
 E:\ТТИ ЮФУ\Практика 3 курс\SCINOLibrary\SCINOLibrary\obj\Debug\SCINOLibrary.Migrations.migr105.resources
 E:\ТТИ ЮФУ\Практика 3 курс\SCINOLibrary\SCINOLibrary\obj\Debug\SCINOLibrary.Migrations.migr106.resources
+E:\ТТИ ЮФУ\Практика 3 курс\SCINOLibrary\SCINOLibrary\obj\Debug\SCINOLibrary.Migrations.migr98.resources
+E:\ТТИ ЮФУ\Практика 3 курс\SCINOLibrary\SCINOLibrary\obj\Debug\SCINOLibrary.Migrations.migr99.resources

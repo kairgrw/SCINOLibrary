@@ -22,12 +22,12 @@ namespace SCINOLibrary.Models
         [Display(Name="Статус")]
         public EStatus Status { get; set; }
 
-        // просмотрена ли заявка адресатом
-        public bool IsChecked { get; set; }
-
         // время оформления заявки
         [Display(Name = "Оформлена")]
         public DateTime CreateAt { get; set; }
+
+        // просмотрена ли заявка адресатом
+        public bool IsChecked { get; set; }
 
         // время рассмотрения заявки адресатом
         [Display(Name = "Просмотрена")]

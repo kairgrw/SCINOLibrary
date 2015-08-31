@@ -72,7 +72,6 @@ namespace SCINOLibrary.Controllers
                 }
                 else
                 {
-                    //book.Genres.Clear();
                     if (selectedGenres != null)
                         foreach (var genre in db.Genres.Where(x => selectedGenres.Contains(x.ID)))
                             book.Genres.Add(genre);
@@ -181,7 +180,7 @@ namespace SCINOLibrary.Controllers
         public ActionResult AddImage(int? id, HttpPostedFileBase uploadImage)
         {
             Book book = db.Books.Find(id);
-
+            
             if (uploadImage != null && book != null)
             {
                 byte[] imageData = null;
@@ -343,8 +342,8 @@ namespace SCINOLibrary.Controllers
                 bid = new Bid
                 {
                     Status = EStatus.Created,
-                    IsChecked = false,
                     CreateAt = DateTime.Now,
+                    IsChecked = false,
                     UserCreate = user,
                     WantedBook = db.Books.Find(model.WantedBookID),
                     SuggestedBook = model.Books.Find(y => y.Title == model.Title)

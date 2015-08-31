@@ -22,6 +22,21 @@ namespace SCINOLibrary.Controllers
             ApplicationUser user = db.Users.Find(UserId);
             if (Session["UserName"] == null)
                 Session["UserName"] = user.Surname + " " + user.Name;
+            if (Session["Suggestions"] != null)
+            {
+                var suggestions = _bidHelper.CreateListOfNewBidsToUser(user);
+                if (suggestions.Count > 0)
+                {
+                    Session["Suggestions"] = suggestions.Count;
+                }
+            }
+            if (Session["Bids"] != null)
+            {
+                var newBids = _bidHelper.CreateBidList(user);
+                int count = _bidHelper.GetNewBidsCount(newBids, user);
+                if (count > 0)
+                    Session["Bids"] = count;
+            }
             var bids = _bidHelper.CreateBidList(user);
 
             return View(bids);
@@ -35,11 +50,167 @@ namespace SCINOLibrary.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Bid bid = db.Bids.Find(id);
+            
+            if(bid.Status > EStatus.Created && bid.UserCreate.Id == UserId && (!bid.IsChecked))
+            {
+                bid.IsChecked = true;
+                db.Entry(bid).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+
             if (bid == null)
             {
                 return HttpNotFound();
             }
             return View(bid);
+        }
+
+        /// <summary>
+        /// Пользователь отметил заявку как просмотренную
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult Check(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Bid bid = db.Bids.Find(id);
+            if (bid == null)
+            {
+                return HttpNotFound();
+            }
+
+            bid.IsChecked = true;
+            bid.Status = EStatus.Processing;
+            bid.CheckedAt = DateTime.Now;
+            db.Entry(bid).State = EntityState.Modified;
+            db.SaveChanges();
+
+            ApplicationUser user = db.Users.Find(UserId);
+
+            if (Session["Bids"] != null)
+            {
+                var bids = _bidHelper.CreateBidList(user);
+                int count = _bidHelper.GetNewBidsCount(bids, user);
+                if (count > 0)
+                    Session["Bids"] = count;
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        /// <summary>
+        /// Пользователь подтвердил заявку
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult Approve(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Bid bid = db.Bids.Find(id);
+            if (bid == null)
+            {
+                return HttpNotFound();
+            }
+
+            // если в заявке покупка книги
+            if(bid.BookToBuy!=null)
+            {
+                Book book = db.Books.Find(bid.BookToBuy.ID);
+                if (book == null)
+                {
+                    return HttpNotFound();
+                }
+                ApplicationUser user = db.Users.Find(bid.UserCreate.Id);
+
+                book.Owner = user;
+                book.Bids.Remove(bid);
+                db.Entry(book).State = EntityState.Modified;
+            }
+            // если в заявке обмен книгами
+            else
+            {
+                Book suggestedBook = db.Books.Find(bid.SuggestedBook.ID);
+                Book wantedBook = db.Books.Find(bid.WantedBook.ID);
+                if (suggestedBook == null || wantedBook == null)
+                {
+                    return HttpNotFound();
+                }
+                ApplicationUser sender = db.Users.Find(suggestedBook.Owner.Id);
+                ApplicationUser receiver = db.Users.Find(wantedBook.Owner.Id);
+                suggestedBook.Owner = receiver;
+                wantedBook.Owner = sender;
+                wantedBook.Bids.Remove(bid);
+                db.Entry(suggestedBook).State = EntityState.Modified;
+                db.Entry(wantedBook).State = EntityState.Modified;
+            }
+
+            bid.Status = EStatus.Approved;
+            bid.IsChecked = false;
+            bid.CheckedAt = DateTime.Now;
+
+            db.Entry(bid).State = EntityState.Modified;
+            db.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
+        /// <summary>
+        /// Пользователь отверг заявку
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult Reject(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Bid bid = db.Bids.Find(id);
+            if (bid == null)
+            {
+                return HttpNotFound();
+            }
+
+            // если в заявке покупка книги
+            if (bid.BookToBuy != null)
+            {
+                Book book = db.Books.Find(bid.BookToBuy.ID);
+                if (book == null)
+                {
+                    return HttpNotFound();
+                }
+                book.Bids.Remove(bid);
+                db.Entry(book).State = EntityState.Modified;
+            }
+            // если в заявке обмен книгами
+            else
+            {
+                Book wantedBook = db.Books.Find(bid.WantedBook.ID);
+                if (wantedBook == null)
+                {
+                    return HttpNotFound();
+                }
+                wantedBook.Bids.Remove(bid);
+                db.Entry(wantedBook).State = EntityState.Modified;
+            }
+
+            bid.Status = EStatus.Rejected;
+            bid.IsChecked = false;
+            bid.CheckedAt = DateTime.Now;
+
+            db.Entry(bid).State = EntityState.Modified;
+            db.SaveChanges();
+
+            return RedirectToAction("Index");
         }
 
         protected override void Dispose(bool disposing)

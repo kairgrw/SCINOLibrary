@@ -22,7 +22,6 @@ namespace SCINOLibrary.Models
         public int PublishYearTo { get; set; }
         public SelectList ListPublishYearFrom { get; set; }
 
-        //[RegularExpression(@"^[0-9]{4,4}$", ErrorMessage = "Некорректный год издания")]
         public SelectList ListPublishYearTo { get; set; }
 
         [Display(Name = "Обмен")]
@@ -40,7 +39,7 @@ namespace SCINOLibrary.Models
         public void CreateLists()
         {
             var years = new List<int>();
-            for (int i = DateTime.Now.Year; i >= 1900; i--)
+            for (int i = DateTime.Now.Year; i >= 1600; i--)
                 years.Add(i);
             ListPublishYearFrom = new SelectList(years);
             ListPublishYearTo = new SelectList(years);

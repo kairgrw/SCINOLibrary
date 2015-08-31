@@ -23,7 +23,7 @@ namespace SCINOLibrary.Helpers
         /// <returns></returns>
         public List<Bid> CreateBidList(ApplicationUser user)
         {
-            var bids = db.Bids.Where(x => x.BookToBuy.Owner.Id == user.Id || x.WantedBook.Owner.Id == user.Id || x.UserCreate.Id == user.Id).ToList();
+            var bids = db.Bids.Where(x => x.BookToBuy.Owner.Id == user.Id || x.WantedBook.Owner.Id == user.Id || x.SuggestedBook.Owner.Id == user.Id || x.UserCreate.Id == user.Id).ToList();
             
             if (bids == null)
                 bids = new List<Bid>();
@@ -38,7 +38,7 @@ namespace SCINOLibrary.Helpers
         /// <returns></returns>
         public List<Bid> CreateListOfNewBidsToUser(ApplicationUser user)
         {
-            var bids = db.Bids.Where(x => (x.BookToBuy.Owner.Id == user.Id || x.WantedBook.Owner.Id == user.Id) && (!x.IsChecked)).ToList();
+            var bids = db.Bids.Where(x => (x.BookToBuy.Owner.Id == user.Id || x.WantedBook.Owner.Id == user.Id) && (x.Status == EStatus.Created) && (!x.IsChecked)).ToList();
             
             if (bids == null)
                 bids = new List<Bid>();
@@ -59,7 +59,7 @@ namespace SCINOLibrary.Helpers
             {
                 foreach (var bid in bids)
                 {
-                    if ((bid.UserCreate.Id != user.Id || bid.Status == EStatus.Approved || bid.Status == EStatus.Rejected) && !bid.IsChecked)
+                    if ((bid.UserCreate.Id != user.Id || bid.Status >= EStatus.Approved) && (!bid.IsChecked))
                         count++;
                 }
             }

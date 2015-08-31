@@ -1,14 +1,14 @@
 ﻿@model SCINOLibrary.Models.Bid
+@using SCINOLibrary.Models
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Данные о заявке";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Details</h2>
+<h2>Заявка</h2>
 
 <div>
-    <h4>Bid</h4>
 	<hr />
     <dl class="dl-horizontal">
         <dt>
@@ -16,15 +16,37 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Status)
+           @if (Model.Status == EStatus.Created)
+           {
+               <p style="color:#4800ff">Заявка отправлена!</p>
+           }
+           else if (Model.Status == EStatus.Processing)
+           {
+               <p style="color: #ffd800">Заявка обрабатывается!</p>
+           }
+           else if (Model.Status == EStatus.Rejected)
+           {
+               <p style="color:#ff0000">Заявка отклонена!</p>
+           }
+           else
+           {
+               <p style="color:#2b8a18">Заявка принята!</p>
+           }
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.IsChecked)
+            @Html.Label("Отправил")
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.IsChecked)
+            @if (Model.UserCreate.UserName != User.Identity.Name)
+            {
+                <p>@Html.ActionLink(Model.UserCreate.Surname + " " + Model.UserCreate.Name, "UserInfo", "Home", new { userID = Model.UserCreate.Id, bookID = Model.BookToBuy == null ? Model.WantedBook.ID : Model.BookToBuy.ID }, null)</p>
+            }
+            else
+            {
+                <p>@Model.UserCreate.Surname @Model.UserCreate.Name</p>
+            }
         </dd>
 
         <dt>
@@ -42,9 +64,38 @@
         <dd>
             @Html.DisplayFor(model => model.CheckedAt)
         </dd>
-
     </dl>
 </div>
-<p>
-    @Html.ActionLink("Back to List", "Index")
-</p>
+
+<div class="row">
+    @if (Model.Status < EStatus.Approved && Model.UserCreate.UserName != User.Identity.Name)
+    {
+        <div class="col-md-1">
+            @using (Html.BeginForm("Approve", "Bid", new { id = Model.ID }, FormMethod.Post, null))
+            {
+                <input type="submit" value="Принять" class="btn btn-success" />
+            }
+        </div>
+        <div class="col-md-1">
+            @using (Html.BeginForm("Reject", "Bid", new { id = Model.ID }, FormMethod.Post, null))
+            {
+                <input type="submit" value="Отказать" class="btn btn-danger" />
+            }
+        </div>
+        if (!Model.IsChecked)
+        {
+            <div class="col-md-1">
+                @using (Html.BeginForm("Check", "Bid", new { id = Model.ID }, FormMethod.Post, null))
+                {
+                    <input type="submit" value="Отметить" class="btn btn-primary" />
+                }
+            </div>
+        }
+    }
+</div>
+
+<div class="col-md-2" style="padding-top:10px">
+    <a href="/Bid/Index">
+        <input type="submit" value="Назад" class="btn btn-default" />
+    </a>
+</div>

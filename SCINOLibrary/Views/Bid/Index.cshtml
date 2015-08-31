@@ -5,54 +5,134 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="row">
-    @foreach (var item in Model)
-    {
-        <div class="col-md-2" style="padding: 20px; margin:10px; background-color: #ccc6c6; border:double; border-radius:50px">
-            @if (item.Status == EStatus.Created)
-            {
-                <p style="color:#0094ff">Заявка отправлена!</p>
-            }
-            else if (item.Status == EStatus.Processing)
-            {
-                <p style="color:#ffd800">Заявка обрабатывается</p>
-            }
-            else if (item.Status == EStatus.Rejected)
-            {
-                <p style="color:#ff0000">Заявка отклонена!</p>
-            }
-            else
-            {
-                <p style="color:#2b8a18">Заявка принята!</p>
-            }
+<script type="text/javascript">
+    function loadTable(item) {
+        var tr = document.getElementById("bid");
+        if (!item.IsChecked) {
+            tr.style.backgroundColor = "white";
+        }
+        else {
+            tr.style.backgroundColor = "#87c37d";
+        }
+    };
+</script>
 
-            @if (item.BookToBuy != null)
+@if (Model.ToList().Count==0)
+{
+    <div class="row" style="padding-top:20px">
+        <div class="form-group text-center">
+            <h4>В вашей истории пока нет заявок</h4>
+        </div>
+    </div>
+}
+else
+{
+    <table class="table table-condensed table-bordered" style="border:double">
+        <thead>
+            <tr style="background-color:#87c37d">
+                <th>
+                    <p>Статус</p>
+                </th>
+                <th>
+                    <p>Тип</p>
+                </th>
+                <th>
+                    <p>Книга</p>
+                </th>
+                <th>
+                    <p>Отправил</p>
+                </th>
+                <th>
+                    <p>Отправлена</p>
+                </th>
+                <th>
+                    <p>Рассмотрена</p>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
             {
-                <p>Продажа</p>
-                if (item.BookToBuy.Owner.UserName == User.Identity.Name)
-                {
-                    <p>@Html.ActionLink(item.BookToBuy.Title, "Details", "Book", new { id = item.BookToBuy.ID }, null)</p>
-                }
-                else
-                {
-                    <p>@Html.DisplayFor(model => item.BookToBuy.Title)</p>
-                }
+                <tr id="bid" onload="loadTable(@item);">
+                    <td>
+                        @if (item.Status == EStatus.Created)
+                        {
+                            @Html.ActionLink("Заявка отправлена", "Details", "Bid", new { id = item.ID }, new { @style = "color:#4800ff" })
+                        }
+                        else if (item.Status == EStatus.Processing)
+                        {
+                            @Html.ActionLink("Заявка обрабатывается!", "Details", "Bid", new { id = item.ID }, new { @style = "color:#ffd800" })
+                        }
+                        else if (item.Status == EStatus.Rejected)
+                        {
+                            @Html.ActionLink("Заявка отклонена!", "Details", "Bid", new { id = item.ID }, new { @style = "color:#ff0000" })
+                        }
+                        else
+                        {
+                            @Html.ActionLink("Заявка принята!", "Details", "Bid", new { id = item.ID }, new { @style = "color:#2b8a18" })
+                        }
+                    </td>
+                    @if (item.BookToBuy != null)
+                    {
+                        <td>
+                            <p>Продажа</p>
+                        </td>
+                        <td>
+                            @if (item.BookToBuy.Owner.UserName == User.Identity.Name)
+                            {
+                                <p>@Html.ActionLink(item.BookToBuy.Title, "Details", "Book", new { id = item.BookToBuy.ID }, null)</p>
+                            }
+                            else
+                            {
+                                <p>@Html.DisplayFor(model => item.BookToBuy.Title)</p>
+                            }
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            <p>Обмен</p>
+                        </td>
+                        <td>
+                            @if (item.WantedBook.Owner.UserName == User.Identity.Name)
+                            {
+                                <p>@Html.ActionLink(item.WantedBook.Title, "Details", "Book", new { id = item.WantedBook.ID }, null)</p>
+                            }
+                            else
+                            {
+                                <p>@Html.DisplayFor(model => item.WantedBook.Title)</p>
+                            }
+                            @if (item.SuggestedBook.Owner.UserName == User.Identity.Name)
+                            {
+                                <p>на</p>
+                                <p>@Html.ActionLink(item.SuggestedBook.Title, "Details", "Book", new { id = item.SuggestedBook.ID }, null)</p>
+                            }
+                            else
+                            {
+                                <p>на</p>
+                                <p>@Html.DisplayFor(model => item.SuggestedBook.Title)</p>
+                            }
+                        </td>
+                    }
+                    <td>
+                        @if (item.UserCreate.UserName != User.Identity.Name)
+                        {
+                            <p>@Html.ActionLink(item.UserCreate.Surname + " " + item.UserCreate.Name, "UserInfo", "Home", new { userID = item.UserCreate.Id, bookID = item.BookToBuy == null ? item.WantedBook.ID : item.BookToBuy.ID }, null)</p>
+                        }
+                        else
+                        {
+                            <p>@item.UserCreate.Surname @item.UserCreate.Name</p>
+                        }
+            
+                    </td>
+                    <td>
+                        <p>@Html.DisplayFor(modelItem => item.CreateAt)</p>
+                    </td>
+                    <td>
+                        <p>@Html.DisplayFor(modelItem => item.CheckedAt)</p>
+                    </td>
+                </tr>
             }
-            else
-            {
-                <p>Обмен</p>
-                if (item.WantedBook.Owner.UserName == User.Identity.Name)
-                {
-                    <p>@Html.ActionLink(item.WantedBook.Title, "Details", "Book", new { id = item.WantedBook.ID }, null)</p>
-                }
-                else
-                {
-                    <p>@Html.DisplayFor(model => item.WantedBook.Title)</p>
-                }
-            }
-            <p>@item.UserCreate.Surname @item.UserCreate.Name</p>
-            <p>@Html.DisplayFor(modelItem => item.CreateAt)</p>
-            <p>@Html.DisplayFor(modelItem => item.CheckedAt)</p>
-        </div>  
-    }
-</div>
+        </tbody>
+    </table>
+}

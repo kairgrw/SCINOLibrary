@@ -5,6 +5,25 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<script type="text/javascript">
+    // функция для выравнивания блоков книг по высоте самого большого
+    window.onload = function() {
+        setTimeout(function() {
+            var mainDivs = document.getElementsByClassName('column');
+            var maxHeight = 0;
+            for (var i = 0; i < mainDivs.length; ++i) {
+                if (maxHeight < mainDivs[i].clientHeight) {
+                    maxHeight = mainDivs[i].clientHeight;
+                }
+            }
+            for (var i = 0; i < mainDivs.length; ++i) {
+                mainDivs[i].style.height = maxHeight + "px";
+            }
+        }, 1);
+    }
+
+</script>
+
 @if (Model.ToList().Count == 0)
 {
     <div class="row" style="padding-top:20px">
@@ -33,7 +52,7 @@
     <div class="row">
         @foreach (var item in Model)
         {
-            <div class="col-md-2" style="padding-top:20px">
+            <div class="column col-md-2" style="padding-top:20px">
                 @if (item.Image == null)
                 {
                     <img class="img-thumbnail" style="width: 200px; height: 200px;" src="~/Files/img/bookdef.png" data-holder-rendered="true">

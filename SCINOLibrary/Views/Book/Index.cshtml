@@ -79,7 +79,7 @@
         }
     </div>
     <div class="tab-pane fade" id="Bids">
-        <div class=" row">
+        <div class="row">
             @if (Session["Suggestions"]==null)
             {
                 <div class="row" style="padding-top:20px">
@@ -92,7 +92,7 @@
             {
                 foreach (var item in Model.Bids)
                 {
-                    <div class="col-md-4" style="padding: 20px; border: groove; border-radius: 10px">
+                    <div class="col-md-4" style="padding: 20px; border: groove; border-radius: 10px; margin:5px">
                         <p>
                             @if(item.BookToBuy!=null)
                             {
@@ -126,12 +126,12 @@
                                         }
                                     </div>
                                 }
-                                if(!item.IsChecked)
+                                if (!item.IsChecked)
                                 {
                                     <div class="col-md-2 col-md-offset-1">
                                         @using (Html.BeginForm("Check", "Bid", new { id = item.ID }, FormMethod.Post, null))
                                         {
-                                            <input type="submit" value="Отметить" class="btn btn-primary" />
+                                        <input type="submit" value="Отметить" class="btn btn-primary" />
                                         }
                                     </div>
                                 }
@@ -174,7 +174,7 @@
                                     <div class="col-md-2 col-md-offset-1">
                                         @using (Html.BeginForm("Check", "Bid", new { id = item.ID }, FormMethod.Post, null))
                                         {
-                                            <input type="submit" value="Отметить" class="btn btn-primary" />
+                                        <input type="submit" value="Отметить" class="btn btn-primary" />
                                         }
                                     </div>
                                 }
