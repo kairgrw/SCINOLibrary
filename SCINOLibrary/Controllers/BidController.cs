@@ -17,29 +17,30 @@ namespace SCINOLibrary.Controllers
     public class BidController : Controller
     {
         // GET: /Bid/
-        public ActionResult Index()
+        public ActionResult Index(int page = 1)
         {
             ApplicationUser user = db.Users.Find(UserId);
-            if (Session["UserName"] == null)
-                Session["UserName"] = user.Surname + " " + user.Name;
-            if (Session["Suggestions"] != null)
+            // создаем список новых заявок, поступивших пользователю
+            var suggestions = _bidHelper.CreateListOfNewBidsToUser(user);
+            if (suggestions.Count > 0)
             {
-                var suggestions = _bidHelper.CreateListOfNewBidsToUser(user);
-                if (suggestions.Count > 0)
-                {
-                    Session["Suggestions"] = suggestions.Count;
-                }
+                Session["Suggestions"] = suggestions.Count;
             }
-            if (Session["Bids"] != null)
-            {
-                var newBids = _bidHelper.CreateBidList(user);
-                int count = _bidHelper.GetNewBidsCount(newBids, user);
-                if (count > 0)
-                    Session["Bids"] = count;
-            }
+            // создаем список обработанных заявок для отображения в истории заявок
+            var newBids = _bidHelper.CreateBidList(user);
+            int count = _bidHelper.GetNewBidsCount(newBids, user);
+            if (count > 0)
+                Session["Bids"] = count;
+
             var bids = _bidHelper.CreateBidList(user);
 
-            return View(bids);
+            // формируем модель, реализующую отображение списка по принципу пагинации
+            int pageSize = 10; // количество объектов на страницу
+            IEnumerable<Bid> bidsPerPages = bids.Skip((page - 1) * pageSize).Take(pageSize);
+            PageInfo pageInfo = new PageInfo { PageNumber = page, PageSize = pageSize, TotalItems = bids.Count };
+            IndexViewModel model = new IndexViewModel { PageInfo = pageInfo, Bids = bidsPerPages };
+
+            return View(model);
         }
 
         // GET: /Bid/Details/5
@@ -66,7 +67,7 @@ namespace SCINOLibrary.Controllers
         }
 
         /// <summary>
-        /// Пользователь отметил заявку как просмотренную
+        /// Отмечает заявку как просмотренную
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -103,7 +104,7 @@ namespace SCINOLibrary.Controllers
         }
 
         /// <summary>
-        /// Пользователь подтвердил заявку
+        /// Подтверждает заявку
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -163,7 +164,7 @@ namespace SCINOLibrary.Controllers
         }
 
         /// <summary>
-        /// Пользователь отверг заявку
+        /// Отклоняет заявку
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>

@@ -19,14 +19,21 @@ namespace SCINOLibrary.Controllers
     {
         [AllowAnonymous]
         // GET: /Book/
-        public ActionResult Index()
+        public ActionResult Index(int page = 1)
         {
             ApplicationUser user = db.Users.Find(UserId);
-            MyBooksModel model = new MyBooksModel()
+            MyBooksModel myBooksModel = new MyBooksModel()
             {
                 Books = db.Books.ToList().Where(x => x.Owner == user).ToList(),
                 Bids = _bidHelper.CreateListOfNewBidsToUser(user)
             };
+            // формируем модель, реализующую отображение списка по принципу пагинации
+            int pageSize = 12; // количество объектов на страницу
+            IEnumerable<Book> booksPerPages = myBooksModel.Books.Skip((page - 1) * pageSize).Take(pageSize);
+            PageInfo pageInfo = new PageInfo { PageNumber = page, PageSize = pageSize, TotalItems = myBooksModel.Books.Count };
+            myBooksModel.Books = booksPerPages.ToList();
+            IndexViewModel model = new IndexViewModel { PageInfo = pageInfo, booksModel = myBooksModel };
+
             return View(model);
         }
 
@@ -176,13 +183,26 @@ namespace SCINOLibrary.Controllers
             return RedirectToAction("Index");
         }
 
+        /// <summary>
+        /// Добавляет изображение книги
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="uploadImage"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult AddImage(int? id, HttpPostedFileBase uploadImage)
         {
             Book book = db.Books.Find(id);
-            
+
             if (uploadImage != null && book != null)
             {
+                // если размер загружаемого файла превышает максимальный (512 Кб)
+                if (uploadImage.ContentLength / 1024 > 512)
+                {
+                    ModelState.AddModelError("","Максимальный размер загружаемого файла не должен превышать 512 Кб!");
+                    ViewBag.Genres = db.Genres.ToList();
+                    return View("Edit", book);  
+                }
                 byte[] imageData = null;
                 // считываем переданный файл в массив байтов
                 using (var binaryReader = new BinaryReader(uploadImage.InputStream))
@@ -204,6 +224,11 @@ namespace SCINOLibrary.Controllers
             return View("Edit", book);   
         }
 
+        /// <summary>
+        /// Удаляет изображение книги
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult DeleteImage(int? id)
         {
@@ -226,7 +251,7 @@ namespace SCINOLibrary.Controllers
         }
 
         /// <summary>
-        /// Оформление заявки на покупку книги
+        /// Оформляет заявку на покупку книги
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -246,7 +271,7 @@ namespace SCINOLibrary.Controllers
             // оформление заявки на покупку книги
 
             ApplicationUser user = db.Users.Find(UserId);
-
+            // если такая заявка уже существует
             var bid = db.Bids.ToList().Find(x => (x.UserCreate == user && x.BookToBuy == book));
             if (bid!=null)
             {
@@ -274,7 +299,7 @@ namespace SCINOLibrary.Controllers
         }
 
         /// <summary>
-        /// Отмена заявки на покупку книги
+        /// Удаляет заявку на покупку книги
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -298,6 +323,12 @@ namespace SCINOLibrary.Controllers
             return RedirectToAction("Search", "Home");
         }
 
+        /// <summary>
+        /// Создает список книг, которые пользователь может предложить для обмена
+        /// при оформлении заявки
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet]
         public ActionResult SuggestExchange(int? id)
         {
@@ -320,7 +351,7 @@ namespace SCINOLibrary.Controllers
         }
 
         /// <summary>
-        /// Оформление заявки на обмен книгами
+        /// Оформляет заявку на обмен книгами
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -331,6 +362,7 @@ namespace SCINOLibrary.Controllers
             {
                 ApplicationUser user = db.Users.Find(UserId);
                 model.CreateBooksList(db, UserId);
+                // если такая заявка уже существует
                 var bid = db.Bids.ToList().Find(x => (x.UserCreate == user &&
                     (x.WantedBook != null && x.WantedBook.ID == model.WantedBookID) &&
                     x.SuggestedBook == model.Books.Find(y => y.Title == model.Title)));
@@ -368,7 +400,7 @@ namespace SCINOLibrary.Controllers
         }
 
         /// <summary>
-        /// Отмена заявки на обмен книгами
+        /// Удаляет заявку на обмен книгами
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>

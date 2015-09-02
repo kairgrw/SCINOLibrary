@@ -14,7 +14,7 @@
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container-fluid">
             <div class="navbar-header">
-                @Html.ActionLink("SCINOLibrary", "Index", "Home", null, new { @class = "navbar-brand" })
+                @Html.ActionLink("SCINOLibrary", "Index", "Home", null, new { @class = "navbar-brand", @title = "SCINOLibrary" })
             </div>
             <div class="navbar-collapse collapse">
                 @Html.Partial("_SignInPartial", new SCINOLibrary.Models.LoginViewModel())
@@ -25,13 +25,6 @@
     <div class="container body-content">
         @RenderBody()
     </div>
-
-    <!--Activate the tooltips-->
-    <script>
-        $(function () {
-            $("[data-toggle='tooltip']").tooltip();
-        });
-    </script>
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")

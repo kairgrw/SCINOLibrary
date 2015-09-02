@@ -1,4 +1,5 @@
-﻿@model IEnumerable<SCINOLibrary.Models.Bid>
+﻿@model SCINOLibrary.Models.IndexViewModel
+@using SCINOLibrary.Helpers
 @using SCINOLibrary.Models
 @{
     ViewBag.Title = "Заявки";
@@ -6,18 +7,21 @@
 }
 
 <script type="text/javascript">
-    function loadTable(item) {
-        var tr = document.getElementById("bid");
-        if (!item.IsChecked) {
-            tr.style.backgroundColor = "white";
+    // выделяет непросмотренные заявки белым цветом
+    window.onload = function () {
+        // получаем список заявок
+        var bids = document.getElementsByClassName('bid');
+        // устанавливаем белый цвет для непросмотренной заявки
+        for (var i = 0; i < bids.length; ++i){
+            var checked = bids[i].attributes.getNamedItem('data-is-checked').value;
+            if (checked == "False") {
+                bids[i].style.backgroundColor = 'white';
+            }
         }
-        else {
-            tr.style.backgroundColor = "#87c37d";
-        }
-    };
+    }
 </script>
 
-@if (Model.ToList().Count==0)
+@if (Model.Bids.ToList().Count==0)
 {
     <div class="row" style="padding-top:20px">
         <div class="form-group text-center">
@@ -51,9 +55,9 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @foreach (var item in Model.Bids)
             {
-                <tr id="bid" onload="loadTable(@item);">
+                <tr class="bid" style="background-color:#cfcbcb" data-is-checked="@item.IsChecked">
                     <td>
                         @if (item.Status == EStatus.Created)
                         {
@@ -136,3 +140,12 @@ else
         </tbody>
     </table>
 }
+
+@if (Model.PageInfo.TotalPages > 1)
+{
+    <br />
+    <div class="btn-group">
+        @Html.PageLinks(Model.PageInfo, x => Url.Action("Index", new { page = x }))
+    </div>
+}
+

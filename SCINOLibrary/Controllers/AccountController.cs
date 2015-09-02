@@ -55,8 +55,10 @@ namespace SCINOLibrary.Controllers
                 
                 if (user != null)
                 {
-                    if (Session["UserName"] == null)
-                        Session.Add("UserName", user.Surname + " " + user.Name);
+                    // назначаем строку с именем и фамилией пользователя,
+                    // которая будет отображаться на навигационной панели
+                    Session.Add("UserName", user.Surname + " " + user.Name);
+                        
                     await SignInAsync(user, model.RememberMe);
 
                     return RedirectToLocal(returnUrl);
@@ -100,8 +102,11 @@ namespace SCINOLibrary.Controllers
 
                 if (result.Succeeded)
                 {
+                    // назначаем пользователю роль "Пользователь"
                     IdentityRole role = db.Roles.ToList().Find(x => x.Name == "User");
                     await UserManager.AddToRoleAsync(user.Id, role.Name);
+                    // назначаем строку с именем и фамилией пользователя,
+                    // которая будет отображаться на навигационной панели
                     Session.Add("UserName", user.Surname + " " + user.Name);
 
                     await SignInAsync(user, isPersistent: false);
@@ -137,6 +142,11 @@ namespace SCINOLibrary.Controllers
             return RedirectToAction("Manage", new { Message = message });
         }
 
+        /// <summary>
+        /// Редактирует учетную запись пользователя
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult EditPersonalData(ManagePersonalDataViewModel model)
@@ -154,7 +164,7 @@ namespace SCINOLibrary.Controllers
 
                 db.Entry(user).State = EntityState.Modified;
                 db.SaveChanges();
-
+                // обновляем строку с именем и фамилией пользователя
                 Session["UserName"] = user.Surname + " " + user.Name;
 
                 return RedirectToAction("Manage");
@@ -178,11 +188,7 @@ namespace SCINOLibrary.Controllers
 
             ManagePersonalDataViewModel model = 
                 _authenticationHelper.ConstructPersonalDataModel(UserId);
-
-            //Обновляем имя пользователя, если при обновлении страницы оно пропало
-            ApplicationUser user = db.Users.Find(UserId);
-            if (Session["UserName"] == null)
-                Session["UserName"] = user.Surname + " " + user.Name;
+                
 
             return View(model);
         }

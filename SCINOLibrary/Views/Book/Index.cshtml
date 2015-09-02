@@ -1,5 +1,6 @@
-﻿@model SCINOLibrary.Models.MyBooksModel
+﻿@model SCINOLibrary.Models.IndexViewModel
 @using SCINOLibrary.Models
+@using SCINOLibrary.Helpers
 
 @{
     ViewBag.Title = "Мои книги";
@@ -19,7 +20,7 @@
 </ul>
 <div class="tab-content" id="userDataContent">
     <div class="tab-pane fade active in" id="Home">
-        @if (Model.Books.ToList().Count == 0)
+        @if (Model.booksModel.Books.ToList().Count == 0)
         {
             <div class="row" style="padding-top:20px">
                 <div class="form-group text-center">
@@ -44,7 +45,7 @@
                 }
             </div>
             <div class="row">
-                @foreach (var item in Model.Books)
+                @foreach (var item in Model.booksModel.Books)
                 {
                     <div class="col-md-2" style="padding-top:20px">
                         @if (item.Image == null)
@@ -76,6 +77,13 @@
                     </div>
                 }
             </div>
+            if (Model.PageInfo.TotalPages > 1)
+            {
+                <br />
+                <div class="btn-group">
+                    @Html.PageLinks(Model.PageInfo, x => Url.Action("Index", new { page = x }))
+                </div>
+            }
         }
     </div>
     <div class="tab-pane fade" id="Bids">
@@ -90,7 +98,7 @@
             }
             else
             {
-                foreach (var item in Model.Bids)
+                foreach (var item in Model.booksModel.Bids)
                 {
                     <div class="col-md-4" style="padding: 20px; border: groove; border-radius: 10px; margin:5px">
                         <p>
@@ -179,7 +187,6 @@
                                     </div>
                                 }
                             }
-                            
                         </p>
                     </div>
                 }

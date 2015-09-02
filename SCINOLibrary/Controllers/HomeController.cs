@@ -18,25 +18,19 @@ namespace SCINOLibrary.Controllers
             if(User.Identity.IsAuthenticated)
             {
                 ApplicationUser user = db.Users.Find(User.Identity.GetUserId());
-                if (Session["UserName"] == null)
-                    Session["UserName"] = user.Surname + " " + user.Name;
+                // создаем список книг, принадлежащих текущему пользователю
                 ViewBag.UserBooks = db.Books.ToList().Find(x => x.Owner == user);
-
-                if (Session["Suggestions"] == null)
+                // создаем список новых заявок, поступивших пользователю
+                var suggestions = _bidHelper.CreateListOfNewBidsToUser(user);
+                if (suggestions.Count > 0)
                 {
-                    var suggestions = _bidHelper.CreateListOfNewBidsToUser(user);
-                    if (suggestions.Count > 0)
-                    {
-                        Session["Suggestions"] = suggestions.Count;
-                    }  
+                    Session["Suggestions"] = suggestions.Count;
                 }
-                if (Session["Bids"] == null)
-                {
-                    var bids = _bidHelper.CreateBidList(user);
-                    int count = _bidHelper.GetNewBidsCount(bids, user);
-                    if (count > 0)
-                        Session["Bids"] = count;
-                }
+                // создаем список обработанных заявок для отображения в истории заявок
+                var bids = _bidHelper.CreateBidList(user);
+                int count = _bidHelper.GetNewBidsCount(bids, user);
+                if (count > 0)
+                    Session["Bids"] = count;
             }
 
             SearchBookModel model = new SearchBookModel();
@@ -45,14 +39,12 @@ namespace SCINOLibrary.Controllers
 
             return View(model);
         }
-        
+
         public ActionResult Search()
         {
             if (User.Identity.IsAuthenticated)
             {
                 ApplicationUser user = db.Users.Find(User.Identity.GetUserId());
-                if (Session["UserName"] == null)
-                    Session["UserName"] = user.Surname + " " + user.Name;
                 ViewBag.UserBooks = db.Books.ToList().Find(x => x.Owner == user);
             }
             SearchBookModel model = new SearchBookModel();
@@ -62,6 +54,12 @@ namespace SCINOLibrary.Controllers
             return View("Index", model);
         }
 
+        /// <summary>
+        /// Выполняет поиск книг
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="selectedGenres">список жанров, отмеченных пользователем</param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult Search(SearchBookModel model, int[] selectedGenres)
         {
@@ -69,18 +67,19 @@ namespace SCINOLibrary.Controllers
             {
                 double priceLow = 0;
                 double priceHigh = 0;
-
+                // проверяем диапазон цен
                 if (model.PriceLow != null && model.PriceHigh != null)
                 {
                     priceLow = Convert.ToDouble(model.PriceLow);
                     priceHigh = Convert.ToDouble(model.PriceHigh);
                 }
-
+                // если одно из полей диапазона заполнено, а другое нет
                 if((model.PriceLow!=null && model.PriceHigh==null) ||
                         (model.PriceLow == null && model.PriceHigh != null))
                 {
                     ModelState.AddModelError("", "Одно из полей не заполнено (цена)");
                 }
+                // проверяем диапазон годов издания
                 else if (model.PublishYearFrom > model.PublishYearTo)
                 {
                     ModelState.AddModelError("", "Левая граница интервала больше правой (год издания)");
@@ -93,6 +92,7 @@ namespace SCINOLibrary.Controllers
                 {
                     ModelState.AddModelError("", "Левая граница интервала больше правой (цена)");
                 }
+                // если все данные корректны, выполняем поиск
                 else
                 {
                     List<Book> books = new List<Book>();
@@ -123,6 +123,12 @@ namespace SCINOLibrary.Controllers
             return View(book);
         }
 
+        /// <summary>
+        /// Получает сведения о пользователе (владелец книги)
+        /// </summary>
+        /// <param name="userID"></param>
+        /// <param name="bookID"></param>
+        /// <returns></returns>
         public ActionResult UserInfo(string userID, int bookID)
         {
             ApplicationUser user = db.Users.Find(userID);

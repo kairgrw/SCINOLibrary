@@ -6,11 +6,13 @@
 }
 
 <script type="text/javascript">
-    // функция для выравнивания блоков книг по высоте самого большого
+    // выравнивает блоки книг по высоте наибольшого
     window.onload = function() {
-        setTimeout(function() {
+        setTimeout(function () {
+            // получаем список блоков книг
             var mainDivs = document.getElementsByClassName('column');
             var maxHeight = 0;
+            // вычисляем наибольшую высоту блока
             for (var i = 0; i < mainDivs.length; ++i) {
                 if (maxHeight < mainDivs[i].clientHeight) {
                     maxHeight = mainDivs[i].clientHeight;

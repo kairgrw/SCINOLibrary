@@ -9,6 +9,9 @@ using SCINOLibrary.Models;
 
 namespace SCINOLibrary.Helpers
 {
+    /// <summary>
+    /// Всмопогательный класс для модуля "Заявки"
+    /// </summary>
     public class BidHelper
     {
         public BidHelper()
@@ -23,7 +26,8 @@ namespace SCINOLibrary.Helpers
         /// <returns></returns>
         public List<Bid> CreateBidList(ApplicationUser user)
         {
-            var bids = db.Bids.Where(x => x.BookToBuy.Owner.Id == user.Id || x.WantedBook.Owner.Id == user.Id || x.SuggestedBook.Owner.Id == user.Id || x.UserCreate.Id == user.Id).ToList();
+            var bids = db.Bids.Where(x => x.UserCreate.Id == user.Id || x.BookToBuy.Owner.Id == user.Id ||
+                x.WantedBook.Owner.Id == user.Id || x.SuggestedBook.Owner.Id == user.Id).ToList();
             
             if (bids == null)
                 bids = new List<Bid>();
