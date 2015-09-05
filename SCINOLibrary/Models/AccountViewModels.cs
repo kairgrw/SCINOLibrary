@@ -34,15 +34,16 @@ namespace SCINOLibrary.Models
         [Required(ErrorMessage = "Введите адрес электронной почты!")]
         [DataType(DataType.EmailAddress)]
         [Display(Name = "Электронная почта")]
+        [RegularExpression("^[a-z0-9][-a-z0-9.!#$%&'*+-=?^_`{|}~]+@([-a-z0-9]+.)+[a-z]{2,5}$", ErrorMessage = "Некорректный e-mail!")]
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Введите фамилию!")]
-        [RegularExpression(@"^[A-ZА-ЯЁ][a-zа-яё]{0,20}((-[a-zA-Zа-яёА-ЯЁ]{1,20})?|( [a-zA-Zа-яёА-ЯЁ]{2,20})?){0,2}$", ErrorMessage = "Некорректная фамилия!")]
+        [RegularExpression(@"^([a-zа-яё]|[A-ZА-ЯЁ])[a-zа-яё]{0,20}((-[a-zA-Zа-яёА-ЯЁ]{1,20})?|( [a-zA-Zа-яёА-ЯЁ]{2,20})?){0,2}$", ErrorMessage = "Некорректная фамилия!")]
         [Display(Name = "Фамилия")]
         public string Surname { get; set; }
 
         [Required(ErrorMessage = "Введите имя!")]
-        [RegularExpression(@"^[A-ZА-ЯЁ][a-zа-яё]{1,20}$", ErrorMessage = "Некорректное имя!")]
+        [RegularExpression(@"^([a-zа-яё]|[A-ZА-ЯЁ])[a-zа-яё]{1,20}$", ErrorMessage = "Некорректное имя!")]
         [Display(Name = "Имя")]
         public string Name { get; set; }
 
@@ -82,12 +83,12 @@ namespace SCINOLibrary.Models
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Введите фамилию!")]
-        [RegularExpression(@"^[a-zа-яё][a-zа-яё]{0,20}((-[a-zA-Zа-яёА-ЯЁ]{1,20})?|( [a-zA-Zа-яёА-ЯЁ]{2,20})?){0,2}$", ErrorMessage = "Некорректная фамилия!")]
+        [RegularExpression(@"^([a-zа-яё]|[A-ZА-ЯЁ])[a-zа-яё]{0,20}((-[a-zA-Zа-яёА-ЯЁ]{1,20})?|( [a-zA-Zа-яёА-ЯЁ]{2,20})?){0,2}$", ErrorMessage = "Некорректная фамилия!")]
         [Display(Name = "Фамилия")]
         public string Surname { get; set; }
 
         [Required(ErrorMessage = "Введите имя!")]
-        [RegularExpression(@"^[a-zа-яё][a-zа-яё]{1,20}$", ErrorMessage = "Некорректное имя!")]
+        [RegularExpression(@"^([a-zа-яё]|[A-ZА-ЯЁ])[a-zа-яё]{1,20}$", ErrorMessage = "Некорректное имя!")]
         [Display(Name = "Имя")]
         public string Name { get; set; }
 
